@@ -1,16 +1,18 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+// eslint.config.mjs
 import { FlatCompat } from "@eslint/eslintrc";
+import { fileURLToPath } from "url";
+import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+const compat = new FlatCompat({ baseDirectory: __dirname });
 
-const eslintConfig = [
+export default [
+  // Extinde preset-urile Next via compat
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+
+  // Ignoră folderele de build
   {
     ignores: [
       "node_modules/**",
@@ -20,6 +22,15 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
-];
 
-export default eslintConfig;
+  // (opțional) setări generale pentru TS
+  {
+    languageOptions: {
+      parserOptions: {
+        // Autodetectează proiectul TS (bun cu TS 5)
+        projectService: true,
+        tsconfigRootDir: __dirname,
+      },
+    },
+  },
+];
